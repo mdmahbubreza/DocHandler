@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Compressor</title>
+</head>
+<body>
+    <h1>File Compressor</h1>
+    <form id="upload-form">
+        <label for="file">Upload File:</label>
+        <input type="file" id="file" name="file" required><br><br>
+        <label for="target_size_kb">Target Size (KB):</label>
+        <input type="number" id="target_size_kb" name="target_size_kb" min="1" required><br><br>
+        <button type="submit">Upload and Compress</button>
+    </form>
+    <div id="result"></div>
+
+    <script>
+        document.getElementById('upload-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData();
+            formData.append('file', document.getElementById('file').files[0]);
+            formData.append('target_size_kb', document.getElementById('target_size_kb').value);
+
+            const response = await fetch('/upload', {
+                method: 'POST',
+                body: formData
+            });
+
+            const result = await response.json();
+            const resultDiv = document.getElementById('result');
+
+            if (result.success) {
+                resultDiv.innerHTML = `<p>File compressed successfully. <a href="${result.download_url}">Download here</a>.</p>`;
+            } else {
+                resultDiv.innerHTML = `<p>Error: ${result.error}</p>`;
+            }
+        });
+    </script>
+</body>
+</html>
